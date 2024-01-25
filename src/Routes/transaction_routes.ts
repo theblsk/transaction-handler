@@ -1,26 +1,30 @@
-import {Router} from "express";
-import Transaction from "../Models/Transaction.ts";
+import { Router } from "express";
+import TransactionService from "../Services/transaction_service.ts";
 
 const router = Router();
 
 router.get("/", async (req, res) => {
-    await Transaction.insertMany([
-        {
-            transactionId: "1",
-            transactionDate: new Date(),
-            transactionType: "debit"
-        },
-        {
-            transactionId: "2",
-            transactionDate: new Date(),
-            transactionType: "credit"
-        }
+  try {
+    const dataService = new TransactionService();
+    await dataService.createMany([
+      {
+        transactionDate: new Date(),
+        transactionType: "debit",
+      },
+      {
+        transactionDate: new Date(),
+        transactionType: "credit",
+      },
     ]);
-    const data = await Transaction.find();
+    const data = await dataService.getAll();
     res.json({
-        message: "Connection Successful",
-        data
+      message: "Connection Successful",
+      data,
     });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("An error happened");
+  }
 });
 
 export default router;

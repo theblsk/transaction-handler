@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 export type MerchantModel = {
-    merchantId: string;
     name: string;
     address: string;
     phone: string;
@@ -11,7 +10,6 @@ export type MerchantModel = {
 }
 
 export const merchantSchema = new mongoose.Schema<MerchantModel>({
-    merchantId: {type: String, required: true},
     name: {type: String, required: true},
     address: {type: String, required: true},
     phone: {type: String, required: true},
