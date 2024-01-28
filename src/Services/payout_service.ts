@@ -1,0 +1,56 @@
+import type BasicFunctions from "../Interfaces/BasicFunctions";
+import { Payout, type PayoutModel } from "../Models/Payout";
+
+export default class PayoutService implements BasicFunctions<PayoutModel> {
+  getAll(): Promise<PayoutModel[]> {
+    try {
+      return Payout.find();
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  }
+  getById(id: string): Promise<PayoutModel | null> {
+    try {
+      return Payout.findById(id);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  }
+  create(data: PayoutModel): Promise<PayoutModel> {
+    try{
+        return Payout.create(data);
+    }
+    catch(err){
+        return Promise.reject(err);
+    }
+  }
+  createMany(data: PayoutModel[]): Promise<PayoutModel[]> {
+    try {
+      return Payout.insertMany(data);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  }
+  update(id: string, data: PayoutModel): Promise<PayoutModel | null> {
+    try{
+        return Payout.findByIdAndUpdate(id, data);
+    }
+    catch(err){
+        return Promise.reject(err);
+    }
+  }
+  updateMany(data: PayoutModel[]): Promise<PayoutModel[]> {
+    throw new Error("Method not implemented.");
+  }
+  delete(id: string): Promise<PayoutModel | null> {
+    try{
+        return Payout.findByIdAndDelete(id);
+    }
+    catch(err){
+        return Promise.reject(err);
+    }
+  }
+  deleteMany(): Promise<PayoutModel[]> {
+    throw new Error("Method not implemented.");
+  }
+}

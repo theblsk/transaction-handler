@@ -9,7 +9,10 @@ if (!connectioUrl) {
   throw new Error("Please define the MONGODB connection url");
 }
 
-await mongoose.connect(connectioUrl); // initialize connecting to db
+const db = await mongoose.connect(connectioUrl); // initialize connecting to db
+db.model('Transaction').deleteMany(); // Just to reset data
+// db.model('Merchant').deleteMany();
+// db.model('Notification').deleteMany();
 
 const app = express(); // whole app initialization
 
@@ -23,3 +26,4 @@ app.use("/", appRoutes);
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+

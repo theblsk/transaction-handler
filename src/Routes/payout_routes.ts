@@ -1,9 +1,9 @@
 import { Router } from "express";
-import TransactionService from "../Services/transaction_service.ts";
+import PayoutService from '../Services/payout_service';
 
 const router = Router();
 
-const dataService = new TransactionService();
+const dataService = new PayoutService();
 
 router.get("/", async (req, res) => {
   try {
