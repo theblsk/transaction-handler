@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 export type PayoutModel = {
   date: Date;
-  partialAmout: number;
+  partialAmount: number;
   transactionId: string;
   merchantId: string;
   splitId: string;
@@ -10,8 +10,8 @@ export type PayoutModel = {
 };
 
 export const PayoutSchema = new mongoose.Schema<PayoutModel>({
-  date: { type: Date, required: true },
-  partialAmout: { type: Number, required: true },
+  date: { type: Date, default: () => Date.now(), immutable: true },
+  partialAmount: { type: Number, required: true },
   transactionId: { type: String, required: true },
   merchantId: { type: String, required: true },
   splitId: { type: String, required: true },

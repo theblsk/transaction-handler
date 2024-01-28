@@ -1,9 +1,12 @@
 import { Router } from "express";
-import PayoutService from '../Services/payout_service';
+import PayoutService from "../Services/payout_service";
+import ReportService from "../Services/report_service";
+import type { PayoutModel } from "../Models/Payout";
 
 const router = Router();
 
 const dataService = new PayoutService();
+const reportService = new ReportService();
 
 router.get("/", async (req, res) => {
   try {
@@ -19,13 +22,18 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const data = req.body;
-
-  const newData = await dataService.create(data);
-  return res.status(201).json({
-    message: "Data created",
-    data: newData,
-  });
+  try {
+    const data = req.body as PayoutModel;
+    const newData = await dataService.create(data);
+    await reportService.updateOnPayoutCreation(data, newData.id);
+    return res.status(201).json({
+      message: "Data created",
+      data: newData,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(400).send("An error happened");
+  }
 });
 
 router.get("/:id", async (req, res) => {

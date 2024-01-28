@@ -3,6 +3,7 @@ import type BasicFunctions from "../Interfaces/BasicFunctions";
 import { Report, type ReportModel } from "../Models/Report";
 import type { TransactionModel } from "../Models/Transaction";
 import type { PayoutModel } from "../Models/Payout";
+import type { TModel } from "../Interfaces/BasicFunctions";
 
 export default class ReportService implements BasicFunctions<ReportModel> {
   constructor() {}
@@ -42,7 +43,7 @@ export default class ReportService implements BasicFunctions<ReportModel> {
           currency: transaction.currency,
           paymentMethod: transaction.paymentMethod,
           recordType:
-            transaction.success && transaction.status === "SETTLED"
+            transaction.success && transaction.eventCode === "SETTLED"
               ? "Settled"
               : "Unsettled",
           transactionsHandled: [objectId],
@@ -67,7 +68,7 @@ export default class ReportService implements BasicFunctions<ReportModel> {
         merchantId: merchantId,
       });
       if (report) {
-        const newAmount = report.mainAmount + payout.partialAmout;
+        const newAmount = report.mainAmount + payout.partialAmount;
         await report.updateOne({
           reportDate: payout.date,
           mainAmount: newAmount,
@@ -82,52 +83,52 @@ export default class ReportService implements BasicFunctions<ReportModel> {
     }
   }
 
-  getAll(): Promise<ReportModel[]> {
+  getAll(): Promise<TModel<ReportModel>[]> {
     try {
       return Report.find();
     } catch (err) {
       return Promise.reject(err);
     }
   }
-  getById(id: string): Promise<ReportModel | null> {
+  getById(id: string): Promise<TModel<ReportModel> | null> {
     try {
       return Report.findById(id);
     } catch (err) {
       return Promise.reject(err);
     }
   }
-  create(data: ReportModel): Promise<ReportModel> {
+  create(data: ReportModel): Promise<TModel<ReportModel>> {
     try {
       return Report.create(data);
     } catch (err) {
       return Promise.reject(err);
     }
   }
-  createMany(data: ReportModel[]): Promise<ReportModel[]> {
+  createMany(data: ReportModel[]): Promise<TModel<ReportModel>[]> {
     try {
       return Report.insertMany(data);
     } catch (err) {
       return Promise.reject(err);
     }
   }
-  update(id: string, data: ReportModel): Promise<ReportModel | null> {
+  update(id: string, data: ReportModel): Promise<TModel<ReportModel> | null> {
     try {
       return Report.findByIdAndUpdate(id, data);
     } catch (err) {
       return Promise.reject(err);
     }
   }
-  updateMany(data: ReportModel[]): Promise<ReportModel[]> {
+  updateMany(data: ReportModel[]): Promise<TModel<ReportModel>[]> {
     throw new Error("Method not implemented.");
   }
-  delete(id: string): Promise<ReportModel | null> {
+  delete(id: string): Promise<TModel<ReportModel> | null> {
     try {
       return Report.findByIdAndDelete(id);
     } catch (err) {
       return Promise.reject(err);
     }
   }
-  deleteMany(): Promise<ReportModel[]> {
+  deleteMany(): Promise<TModel<ReportModel>[]> {
     throw new Error("Method not implemented.");
   }
 }

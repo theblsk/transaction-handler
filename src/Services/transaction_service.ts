@@ -1,10 +1,12 @@
+import type { Document, Types } from "mongoose";
 import type BasicFunctions from "../Interfaces/BasicFunctions.ts";
 import Transaction, { type TransactionModel } from "../Models/Transaction.ts";
+import type { TModel } from "../Interfaces/BasicFunctions.ts";
 
 export default class TransactionService
   implements BasicFunctions<TransactionModel>
 {
-  create(data: TransactionModel): Promise<TransactionModel> {
+  create(data: TransactionModel): Promise<TModel<TransactionModel>> {
     try {
       return Transaction.create(data);
     } catch (err) {
@@ -12,7 +14,7 @@ export default class TransactionService
     }
   }
 
-  createMany(data: TransactionModel[]): Promise<TransactionModel[]> {
+  createMany(data: TransactionModel[]): Promise<TModel<TransactionModel>[]> {
     try {
       return Transaction.insertMany(data);
     } catch (err) {
@@ -20,7 +22,7 @@ export default class TransactionService
     }
   }
 
-  delete(id: string): Promise<TransactionModel | null> {
+  delete(id: string): Promise<TModel<TransactionModel> | null> {
     try {
       return Transaction.findByIdAndDelete(id);
     } catch (err) {
@@ -28,11 +30,11 @@ export default class TransactionService
     }
   }
 
-  deleteMany(): Promise<TransactionModel[]> {
+  deleteMany(): Promise<TModel<TransactionModel>[]> {
     throw new Error("Method not implemented.");
   }
 
-  getAll(): Promise<TransactionModel[]> {
+  getAll(): Promise<TModel<TransactionModel>[]> {
     try {
       return Transaction.find();
     } catch (err) {
@@ -40,7 +42,7 @@ export default class TransactionService
     }
   }
 
-  getById(id: string): Promise<TransactionModel | null> {
+  getById(id: string): Promise<TModel<TransactionModel> | null> {
     try {
       return Transaction.findById(id);
     } catch (err) {
@@ -48,7 +50,7 @@ export default class TransactionService
     }
   }
 
-  update(id: string, data: TransactionModel): Promise<TransactionModel | null> {
+  update(id: string, data: TransactionModel): Promise<TModel<TransactionModel> | null> {
     try {
       return Transaction.findByIdAndUpdate(id, data);
     } catch (err) {
@@ -56,7 +58,7 @@ export default class TransactionService
     }
   }
 
-  updateMany(data: TransactionModel[]): Promise<TransactionModel[]> {
+  updateMany(data: TransactionModel[]): Promise<TModel<TransactionModel>[]> {
     throw new Error("Method not implemented.");
   }
 }

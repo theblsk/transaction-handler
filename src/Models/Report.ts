@@ -20,10 +20,9 @@ export const ReportSchema = new mongoose.Schema<ReportModel>({
   currency: { type: String, required: true },
   paymentMethod: { type: String, required: true },
   recordType: { type: String, required: true },
-  transactionsHandled: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "Transaction" },
-  ],
-  payoutsHandled: [{ type: mongoose.Schema.Types.ObjectId, ref: "Payout" }],
+  transactionsHandled: [{ type: mongoose.Schema.Types.ObjectId }],
+  payoutsHandled: [{ type: mongoose.Schema.Types.ObjectId }],
 });
+
 
 export const Report = mongoose.model<ReportModel>("Report", ReportSchema);

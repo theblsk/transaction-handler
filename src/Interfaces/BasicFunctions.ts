@@ -1,10 +1,17 @@
+import type { Document, Types } from "mongoose";
+
+export type TModel<T> = Document<unknown, {}, T> &
+  T & {
+    _id: Types.ObjectId;
+  };
+
 export default interface BasicFunctions<T> {
-    getAll(): Promise<T[]>;
-    getById(id: string): Promise<T | null>;
-    create(data: T): Promise<T>;
-    createMany(data: T[]): Promise<T[]>;
-    update(id: string, data: T): Promise<T | null>;
-    updateMany(data: T[]): Promise<T[]>;
-    delete(id: string): Promise<T | null>;
-    deleteMany(): Promise<T[]>;
+  getAll(): Promise<TModel<T>[]>;
+  getById(id: string): Promise<TModel<T> | null>;
+  create(data: T): Promise<TModel<T>>;
+  createMany(data: T[]): Promise<TModel<T>[]>;
+  update(id: string, data: T): Promise<TModel<T> | null>;
+  updateMany(data: T[]): Promise<TModel<T>[]>;
+  delete(id: string): Promise<TModel<T> | null>;
+  deleteMany(): Promise<TModel<T>[]>;
 }

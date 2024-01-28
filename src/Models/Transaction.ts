@@ -16,7 +16,7 @@ export const transactionSchema = new mongoose.Schema<TransactionModel>({
   merchantId: { type: String, required: true },
   eventCode: { type: String, required: true },
   status: { type: String, required: true },
-  eventDate: { type: Date, required: true },
+  eventDate: { type: Date, default: () => Date.now(), immutable: true },
   amount: { type: Number, required: true },
   currency: { type: String, required: true, default: "$" },
   success: { type: Boolean, required: true },
@@ -27,5 +27,7 @@ const Transaction = mongoose.model<TransactionModel>(
   "Transaction",
   transactionSchema
 );
+
+
 
 export default Transaction;
