@@ -1,45 +1,82 @@
+import type { ObjectId } from "mongoose";
 import type BasicFunctions from "../Interfaces/BasicFunctions";
 import { Report, type ReportModel } from "../Models/Report";
-import type PayoutService from "./payout_service";
-import type TransactionService from "./transaction_service";
+import type { TransactionModel } from "../Models/Transaction";
+import type { PayoutModel } from "../Models/Payout";
 
 export default class ReportService implements BasicFunctions<ReportModel> {
-  constructor(
-    private transactionService: TransactionService,
-    private payoutService: PayoutService
-  ) {}
+  constructor() {}
 
-  //   findReportByTransactionIdAndMerchantId(
-  //     transactionId: string,
-  //     merchantId: string
-  //   ): Promise<ReportModel | null> {
-  //     try {
-  //       return Report.findOne({
-  //         transactionId: transactionId,
-  //         merchantId: merchantId,
-  //       });
-  //     } catch (err) {
-  //       return Promise.reject(err);
-  //     }
-  //   }
 
-  async updateReportOnTransactionOrPayoutUpdate(
-    transactionId: string,
-    merchantId: string
-  ): Promise<ReportModel | null> {
+  // used on every new transaction
+
+  async updateOnTransactionCreation(
+    transaction: TransactionModel,
+    objectId: ObjectId
+  ): Promise<void | null> {
     try {
-      const transaction = await this.transactionService.getById(transactionId);
-      const payout = await this.payoutService.getById(transactionId);
-      
-      return Report.findOneAndUpdate(
-        {
-          transactionId: transactionId,
-          merchantId: merchantId,
-        },
-        {
-          reportDate: new Date(),
-        }
-      );
+      const transactionId = transaction.transactionId;
+      const merchantId = transaction.merchantId;
+      const report = await Report.findOne({
+        transactionId: transactionId,
+        merchantId: merchantId,
+      });
+      if (report) {
+        await report.updateOne({
+          reportDate: transaction.eventDate,
+          currency: transaction.currency,
+          paymentMethod: transaction.paymentMethod,
+          recordType:
+            transaction.success && transaction.status === "SETTLED"
+              ? "Settled"
+              : "Unsettled",
+          transactionsHandled: [...report.transactionsHandled, objectId],
+        });
+        await report.save();
+      } else {
+        await this.create({
+          reportDate: transaction.eventDate,
+          transactionId: transaction.transactionId,
+          merchantId: transaction.merchantId,
+          mainAmount: 0,
+          currency: transaction.currency,
+          paymentMethod: transaction.paymentMethod,
+          recordType:
+            transaction.success && transaction.status === "SETTLED"
+              ? "Settled"
+              : "Unsettled",
+          transactionsHandled: [objectId],
+          payoutsHandled: [],
+        });
+      }
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  }
+
+  // Used on every new payout
+  async updateOnPayoutCreation(
+    payout: PayoutModel,
+    objectId: ObjectId
+  ): Promise<void | null> {
+    try {
+      const transactionId = payout.transactionId;
+      const merchantId = payout.merchantId;
+      const report = await Report.findOne({
+        transactionId: transactionId,
+        merchantId: merchantId,
+      });
+      if (report) {
+        const newAmount = report.mainAmount + payout.partialAmout;
+        await report.updateOne({
+          reportDate: payout.date,
+          mainAmount: newAmount,
+          payoutsHandled: [...report.payoutsHandled, objectId],
+        });
+        await report.save();
+      } else {
+        return Promise.reject("No report found");
+      }
     } catch (err) {
       return Promise.reject(err);
     }

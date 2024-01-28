@@ -19,13 +19,17 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const data = req.body;
-
-  const newData = await dataService.create(data);
-  return res.status(201).json({
-    message: "Data created",
-    data: newData,
-  });
+  try {
+    const data = req.body;
+    const newData = await dataService.create(data);
+    return res.status(201).json({
+      message: "Data created",
+      data: newData,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(400).send("An error happened");
+  }
 });
 
 router.get("/:id", async (req, res) => {
